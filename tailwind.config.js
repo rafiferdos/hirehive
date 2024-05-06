@@ -22,7 +22,9 @@ export default {
       "retro",
       "aqua",
       "valentine",
-      "synthwave"
+      "synthwave",
+      "lemonade",
+      "halloween"
     ]
   }
 }

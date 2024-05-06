@@ -1,5 +1,8 @@
 import { createBrowserRouter } from "react-router-dom"
 import Main from "../layouts/Main"
+import Login from "../pages/Authentication/Login"
+import Home from "../pages/Home"
+import Register from "../pages/Authentication/Register"
 
 const router = createBrowserRouter([
     {
@@ -8,13 +11,25 @@ const router = createBrowserRouter([
         errorElement: <div>404 Not Found</div>,
         children: [
             {
-                path: "/",
-                element: <div>Home</div>
+                index: true,
+                element: <Home />
             },
             {
-                path: "/about",
-                element: <div>About</div>
-            }
+                path: "/login",
+                element: <Login />
+            },
+            {
+                path: "/register",
+                element: <Register />
+            },
+            // {
+            //     path: "/login",
+            //     element: <Login />
+            // },
+            // {
+            //     path: "/login",
+            //     element: <Login />
+            // }
         ]
     }
 ])

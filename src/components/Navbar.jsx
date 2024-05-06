@@ -1,12 +1,14 @@
 import { Link, NavLink } from "react-router-dom"
 import logo from '../assets/images/logo.png'
+import blankUser from '../assets/images/blank_user.jpg'
 import { LuUserPlus2 } from "react-icons/lu";
 import { useContext, useEffect, useState } from "react";
 import { ThemeContext } from "../provider/ThemeProvider";
+import { AuthContext } from "../provider/AuthProvider";
 
 
 const Navbar = () => {
-
+    const { user } = useContext(AuthContext)
     const { theme, setTheme } = useContext(ThemeContext)
     const handleThemeChange = (e) => {
         console.log(theme)
@@ -28,8 +30,8 @@ const Navbar = () => {
         <>
             <NavLink to='/' className={({ isActive }) => isActive ? "text-purple-500 lg:border-b-purple-500 lg:border-b-2" : "hover:text-purple-300"}><a>Home</a></NavLink>
             <NavLink to='/add_jobs' className={({ isActive }) => isActive ? "text-purple-500 lg:border-b-purple-500 lg:border-b-2" : "hover:text-purple-300"}><a>Add Jobs</a></NavLink>
-            <NavLink to='/my_posted_jobs' className={({ isActive }) => isActive ? "text-purple-500 lg:border-b-purple-500 lg:border-b-2" : "hover:text-purple-300"}><a>My Posted Jobs</a></NavLink>
-            <NavLink to='/my_bids' className={({ isActive }) => isActive ? "text-purple-500 lg:border-b-purple-500 lg:border-b-2" : "hover:text-purple-300"}><a>My Bids</a></NavLink>
+            {/* <NavLink to='/my_posted_jobs' className={({ isActive }) => isActive ? "text-purple-500 lg:border-b-purple-500 lg:border-b-2" : "hover:text-purple-300"}><a>My Posted Jobs</a></NavLink>
+            <NavLink to='/my_bids' className={({ isActive }) => isActive ? "text-purple-500 lg:border-b-purple-500 lg:border-b-2" : "hover:text-purple-300"}><a>My Bids</a></NavLink> */}
             <NavLink to='/bid_requests' className={({ isActive }) => isActive ? "text-purple-500 lg:border-b-purple-500 lg:border-b-2" : "hover:text-purple-300"}><a>Bid Requests</a></NavLink>
         </>
 
@@ -89,10 +91,30 @@ const Navbar = () => {
                             <li><input type="radio" name="theme-dropdown" className="theme-controller btn btn-sm btn-block btn-ghost justify-start" aria-label="Retro" onChange={handleThemeChange} value="retro" /></li>
                             <li><input type="radio" name="theme-dropdown" className="theme-controller btn btn-sm btn-block btn-ghost justify-start" aria-label="Cyberpunk" onChange={handleThemeChange} value="cyberpunk" /></li>
                             <li><input type="radio" name="theme-dropdown" className="theme-controller btn btn-sm btn-block btn-ghost justify-start" aria-label="Valentine" onChange={handleThemeChange} value="valentine" /></li>
-                            <li><input type="radio" name="theme-dropdown" className="theme-controller btn btn-sm btn-block btn-ghost justify-start" aria-label="Aqua" onChange={handleThemeChange} value="aqua" /></li>
+                            <li><input type="radio" name="theme-dropdown" className="theme-controller btn btn-sm btn-block btn-ghost justify-start" aria-label="Lemonade" onChange={handleThemeChange} value="lemonade" /></li>
+                            <li><input type="radio" name="theme-dropdown" className="theme-controller btn btn-sm btn-block btn-ghost justify-start" aria-label="Halloween" onChange={handleThemeChange} value="halloween" /></li>
                         </ul>
                     </div>
-                    <a className="btn btn-ghost hover:bg-transparent lg:hover:shadow-purple-300 lg:hover:border-b-purple-400"><LuUserPlus2 className="text-xl" /><p>Login</p></a>
+                    {
+                        user ?
+                            <>
+                                <div className="dropdown dropdown-end">
+                                    <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+                                        <div className="w-10 rounded-full">
+                                            <img alt="Tailwind CSS Navbar component" src={blankUser} />
+                                        </div>
+                                    </div>
+                                    <ul tabIndex={0} className="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-200 rounded-box w-52">
+
+                                        <li><NavLink to='/my_posted_jobs'>My Posted Jobs</NavLink></li>
+                                        <li><NavLink to='/my_bids'>My Bids</NavLink></li>
+                                        <li><a>Logout</a></li>
+                                    </ul>
+                                </div>
+                            </>
+                            :
+                            <Link to='/login' className="btn btn-ghost hover:bg-transparent hover:bg-base-200"><LuUserPlus2 className="text-xl" /><p>Login</p></Link>
+                    }
                 </div>
             </div>
         </div>
