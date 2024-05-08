@@ -8,12 +8,12 @@ import { AuthContext } from "../provider/AuthProvider";
 
 
 const Navbar = () => {
-    const { user } = useContext(AuthContext)
+    const { user, logOut } = useContext(AuthContext)
     const { theme, setTheme } = useContext(ThemeContext)
     const handleThemeChange = (e) => {
-        console.log(theme)
         setTheme(e.target.value)
     }
+    console.log(user)
     useEffect(() => {
         localStorage.setItem('theme', theme)
         const localTheme = localStorage.getItem('theme')
@@ -100,15 +100,15 @@ const Navbar = () => {
                             <>
                                 <div className="dropdown dropdown-end">
                                     <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
-                                        <div className="w-10 rounded-full">
-                                            <img alt="Tailwind CSS Navbar component" src={blankUser} />
+                                        <div className="w-10 rounded-full tooltip tooltip-bottom" data-tip={user.displayName}>
+                                            <img alt="Tailwind CSS Navbar component" src={user?.photoURL || blankUser} referrerPolicy="no-referrer"/>
                                         </div>
                                     </div>
                                     <ul tabIndex={0} className="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-200 rounded-box w-52">
 
                                         <li><NavLink to='/my_posted_jobs'>My Posted Jobs</NavLink></li>
                                         <li><NavLink to='/my_bids'>My Bids</NavLink></li>
-                                        <li><a>Logout</a></li>
+                                        <li onClick={logOut}><a>Logout</a></li>
                                     </ul>
                                 </div>
                             </>

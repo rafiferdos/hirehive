@@ -1,11 +1,58 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import registerImg from '../../assets/images/register.jpg';
 import logo from '../../assets/images/logo.png'
+import { AuthContext } from '../../provider/AuthProvider';
+import { useContext } from 'react';
+import toast from 'react-hot-toast';
+import { useForm } from 'react-hook-form';
+// import { reload } from 'firebase/auth';
+// import { updateProfile } from 'firebase/auth';
 
 const Register = () => {
+
+    const navigate = useNavigate()
+    const { signInWithGoogle, createUser, setUser, updateUserProfile } = useContext(AuthContext)
+
+    //* google sign in
+    const handleGoogleSignIn = async () => {
+        try {
+            const userCredential = await signInWithGoogle();
+            const user = userCredential.user;
+            toast.success(`Signed In as ${user.displayName}`)
+            navigate('/')
+        }
+        catch (err) {
+            toast.error(err?.message)
+        }
+
+    }
+
+    //* create user
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm()
+
+    const onSubmit = async (data) => {
+
+        const { full_name, email, password, photo_url } = data
+        try {
+            const userCredential = await createUser(email, password);
+            const user = userCredential.user;
+            await updateUserProfile(full_name, photo_url)
+            setUser({ ...user, photoURL: photo_url, displayName: full_name })
+            toast.success(`Signed Up as ${user.displayName}`)
+            navigate('/')
+        }
+        catch (err) {
+            toast.error(err?.message)
+        }
+    }
+
     return (
         <div className="flex min-h-[calc(100vh-200px)] items-center justify-center">
-            <div className="flex w-full max-w-sm mx-auto overflow-hidden bg-base-200 rounded-lg shadow-lg lg:max-w-4xl">
+            <div className="flex flex-row-reverse w-full max-w-sm mx-auto overflow-hidden bg-base-200 rounded-2xl shadow-lg lg:max-w-4xl">
                 <div className="hidden bg-cover lg:block lg:w-1/2" style={{ backgroundImage: `url(${registerImg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
                 <div className="w-full px-6 py-8 md:px-8 lg:w-1/2">
                     <div className="flex justify-center mx-auto">
@@ -13,10 +60,10 @@ const Register = () => {
                     </div>
 
                     <p className="mt-3 text-xl text-center text-accent">
-                        Welcome back!
+                        Hey there!
                     </p>
 
-                    <a href="#" className="flex items-center justify-center mt-4 transition-colors duration-300 transform border rounded-lg hover:bg-base-300 ">
+                    <a onClick={handleGoogleSignIn} className="flex items-center justify-center mt-4 transition-colors duration-300 transform border rounded-lg hover:bg-base-300 ">
                         <div className="px-4 py-2">
                             <svg className="w-6 h-6" viewBox="0 0 40 40">
                                 <path d="M36.3425 16.7358H35V16.6667H20V23.3333H29.4192C28.045 27.2142 24.3525 30 20 30C14.4775 30 10 25.5225 10 20C10 14.4775 14.4775 9.99999 20 9.99999C22.5492 9.99999 24.8683 10.9617 26.6342 12.5325L31.3483 7.81833C28.3717 5.04416 24.39 3.33333 20 3.33333C10.7958 3.33333 3.33335 10.7958 3.33335 20C3.33335 29.2042 10.7958 36.6667 20 36.6667C29.2042 36.6667 36.6667 29.2042 36.6667 20C36.6667 18.8825 36.5517 17.7917 36.3425 16.7358Z" fill="#FFC107" />
@@ -26,37 +73,50 @@ const Register = () => {
                             </svg>
                         </div>
 
-                        <span className="w-5/6 px-4 py-3 font-bold text-center">Sign in with Google</span>
+                        <span className="w-5/6 px-4 py-3 font-bold text-center">Continue with Google</span>
                     </a>
 
                     <div className="flex items-center justify-between mt-4">
                         <span className="w-1/5 border-b lg:w-1/4"></span>
-
-                        <a href="#" className="text-xs text-center text-gray-500 uppercase hover:underline text-current">or login
-                            with email</a>
-
+                        <a href="#" className="text-xs text-center text-gray-500 uppercase hover:underline text-current">or create with email</a>
                         <span className="w-1/5 border-b lg:w-1/4"></span>
                     </div>
 
-                    <div className="mt-4">
-                        <label className="block mb-2 text-sm font-medium" htmlFor="LoggingEmailAddress">Email Address</label>
-                        <input id="LoggingEmailAddress" className="block w-full px-4 py-2 text-gray-700 bg-base-100 border rounded-lg focus:ring-opacity-40 focus:outline-none focus:ring" type="email" />
-                    </div>
+                    <form onSubmit={handleSubmit(onSubmit)}>
 
-                    <div className="mt-4">
-                        <div className="flex justify-between">
-                            <label className="block mb-2 text-sm font-medium" htmlFor="loggingPassword">Password</label>
-                            <a href="#" className="text-xs hover:underline">Forget Password?</a>
+                        <div className="mt-4">
+                            <label className="block mb-2 text-sm font-medium" htmlFor="full_name">Full Name</label>
+                            <input id="full_name" className="block w-full px-4 py-2 text-gray-700 bg-base-100 border rounded-lg focus:ring-opacity-40 focus:outline-none focus:ring" type="text" {...register("full_name", { required: true })}/>
+                            {errors.full_name && <span className='text-error'>This field is required</span>}
                         </div>
 
-                        <input id="loggingPassword" className="block w-full px-4 py-2 bg-base-100 border rounded-lg 0 focus:ring-opacity-40 focus:outline-none focus:ring " type="password" />
-                    </div>
+                        <div className="mt-4">
+                            <label className="block mb-2 text-sm font-medium" htmlFor="LoggingEmailAddress">Email Address</label>
+                            <input id="LoggingEmailAddress" className="block w-full px-4 py-2 text-gray-700 bg-base-100 border rounded-lg focus:ring-opacity-40 focus:outline-none focus:ring" type="email" {...register("email", { required: true })}/>
+                            {errors.email && <span className='text-error'>This field is required</span>}
+                        </div>
 
-                    <div className="mt-6">
-                        <button className="w-full px-6 py-3 text-sm font-medium tracking-wide capitalize transform btn-primary btn rounded-lg focus:outline-none focus:ring focus:ring-opacity-50">
-                            Sign In
-                        </button>
-                    </div>
+                        <div className="mt-4">
+                            <label className="block mb-2 text-sm font-medium" htmlFor="photoURL">Photo URL</label>
+                            <input id="photoURL" className="block w-full px-4 py-2 text-gray-700 bg-base-100 border rounded-lg focus:ring-opacity-40 focus:outline-none focus:ring" type="text" {...register("photo_url")}/>
+                        </div>
+
+                        <div className="mt-4">
+                            <div className="flex justify-between">
+                                <label className="block mb-2 text-sm font-medium" htmlFor="loggingPassword">Password</label>
+                                {/* <a href="#" className="text-xs hover:underline">Forget Password?</a> */}
+                            </div>
+
+                            <input id="loggingPassword" className="block w-full px-4 py-2 bg-base-100 border rounded-lg 0 focus:ring-opacity-40 focus:outline-none focus:ring " type="password" {...register("password", { required: true })}/>
+                            {errors.password && <span className='text-error'>This field is required</span>}
+                        </div>
+
+                        <div className="mt-6">
+                            <button type='submit' className="w-full px-6 py-3 text-sm font-medium tracking-wide capitalize transform btn-primary btn rounded-lg focus:outline-none focus:ring focus:ring-opacity-50">
+                                Sign Up
+                            </button>
+                        </div>
+                    </form>
 
                     <div className="flex items-center justify-between mt-4">
                         <span className="w-1/5 border-b md:w-1/4"></span>
