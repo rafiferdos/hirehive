@@ -35,16 +35,29 @@ const Login = () => {
 
     const onSubmit = async (data) => {
         const { email, password } = data
-        try {
-            const userCredential = await signIn(email, password);
-            const user = userCredential.user;
-            setUser(user)
-            toast.success(`Signed In as ${user.displayName}`)
-            navigate('/')
-        }
-        catch (err) {
-            toast.error(err?.message)
-        }
+        // try {
+        //     const userCredential = await signIn(email, password);
+        //     const user = userCredential.user;
+        //     setUser(user)
+        //     toast.success(`Signed In as ${user.displayName}`)
+        //     navigate('/')
+        // }
+        // catch (err) {
+        //     toast.error(err?.message)
+        // }
+        toast.promise(
+            signIn(email, password).then((userCredential) => {
+                const user = userCredential.user;
+                setUser(user);
+                navigate('/');
+                return user.displayName; // Return the displayName directly
+            }),
+            {
+                loading: 'Signing in...',
+                success: (name) => <b>Signed in as {name}!</b>, // Use the name directly
+                error: (err) => <b>{err?.message}</b>,
+            }
+        );
     }
 
 

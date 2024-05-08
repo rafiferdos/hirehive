@@ -37,13 +37,29 @@ const Register = () => {
     const onSubmit = async (data) => {
 
         const { full_name, email, password, photo_url } = data
+        // try {
+        //     const userCredential = await createUser(email, password);
+        //     const user = userCredential.user;
+        //     await updateUserProfile(full_name, photo_url)
+        //     setUser({ ...user, photoURL: photo_url, displayName: full_name })
+        //     toast.success(`Signed Up as ${user.displayName}`)
+        //     navigate('/')
+        // }
         try {
-            const userCredential = await createUser(email, password);
-            const user = userCredential.user;
-            await updateUserProfile(full_name, photo_url)
-            setUser({ ...user, photoURL: photo_url, displayName: full_name })
-            toast.success(`Signed Up as ${user.displayName}`)
-            navigate('/')
+            toast.promise(
+                createUser(email, password).then(async (userCredential) => {
+                    const user = userCredential.user;
+                    await updateUserProfile(full_name, photo_url);
+                    setUser({ ...user, photoURL: photo_url, displayName: full_name });
+                    navigate('/');
+                    return full_name
+                }),
+                {
+                    loading: 'Creating user...',
+                    success: (name) => <b>User created as {name}!</b>,
+                    error: <b>Could not create user.</b>,
+                }
+            );
         }
         catch (err) {
             toast.error(err?.message)
