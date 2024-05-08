@@ -13,7 +13,6 @@ const Navbar = () => {
     const handleThemeChange = (e) => {
         setTheme(e.target.value)
     }
-    console.log(user)
     useEffect(() => {
         localStorage.setItem('theme', theme)
         const localTheme = localStorage.getItem('theme')
@@ -99,8 +98,8 @@ const Navbar = () => {
                         user ?
                             <>
                                 <div className="dropdown dropdown-end">
-                                    <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
-                                        <div className="w-10 rounded-full tooltip tooltip-bottom" data-tip={user.displayName}>
+                                    <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar tooltip tooltip-bottom items-center flex"  data-tip={user?.displayName || "No Username"}>
+                                        <div className="w-10 rounded-full">
                                             <img alt="Tailwind CSS Navbar component" src={user?.photoURL || blankUser} referrerPolicy="no-referrer"/>
                                         </div>
                                     </div>
